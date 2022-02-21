@@ -1,9 +1,9 @@
 # dataset settings
 dataset_type = 'S3DISSegDataset'
-data_root = './data/s3dis/'
+data_root = 'G:/Datasets/s3dis/'
 class_names = ('ceiling', 'floor', 'wall', 'beam', 'column', 'window', 'door',
                'table', 'chair', 'sofa', 'bookcase', 'board', 'clutter')
-num_points = 4096
+num_points = 2048
 train_area = [1, 2, 3, 4, 6]
 test_area = 5
 train_pipeline = [

@@ -1,8 +1,8 @@
 import torch
 from torch import nn as nn
 from torch.nn import functional as F
-from mmcv.runner import BaseModule, auto_fp16
-from mmcv.cnn import ConvModule, ModuleList
+from mmcv.runner import BaseModule, ModuleList, auto_fp16
+from mmcv.cnn import ConvModule
 
 from mmdet3d.ops import PointFPModule, build_sa_module
 from mmdet.models import BACKBONES
@@ -61,7 +61,7 @@ class Point_Transformer(BaseModule):
 
         self.num_stages = num_stages
 
-        self.pointembedding = ConvModule(
+        self.point_embedding = ConvModule(
             in_channels,
             channels,
             1,
@@ -82,7 +82,9 @@ class Point_Transformer(BaseModule):
 
     @auto_fp16()
     def forward(self, points):
-        x = self.pointembedding(points)
+        # b, n, c --> b, c, n
+        x = points.permute(0, 2, 1)
+        x = self.point_embedding(x)
         x = self.conv(x)
 
         outs = []

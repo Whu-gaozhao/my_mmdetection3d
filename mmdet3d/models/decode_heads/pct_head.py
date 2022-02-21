@@ -25,7 +25,7 @@ class Point_TransformerHead(Base3DDecodeHead):
         super(Point_TransformerHead, self).__init__(**kwargs)
 
         self.in_channels_sum = sum(in_channels)
-        self.convfuse = ConvModule(
+        self.conv_fuse = ConvModule(
             self.in_channels_sum,
             mlp_channel,
             1,
