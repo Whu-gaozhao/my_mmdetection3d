@@ -77,7 +77,7 @@ class Point_Transformer(BaseModule):
             act_cfg=act_cfg)
 
         self.sa = ModuleList()
-        for i in range(self.num_stages):
+        for _ in range(self.num_stages):
             self.sa.append(SA_Layer(channels))
 
     @auto_fp16()

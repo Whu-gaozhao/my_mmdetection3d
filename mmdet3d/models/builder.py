@@ -7,12 +7,18 @@ from mmdet.models.builder import (BACKBONES, DETECTORS, HEADS, LOSSES, NECKS,
                                   ROI_EXTRACTORS, SHARED_HEADS)
 from mmseg.models.builder import SEGMENTORS
 
+from mmseg.models.builder import BACKBONES as SEGBACKBONES
+
 MODELS = Registry('models', parent=MMCV_MODELS)
 
 VOXEL_ENCODERS = MODELS
 MIDDLE_ENCODERS = MODELS
 FUSION_LAYERS = MODELS
 
+
+def build_seg_backbone(cfg):
+    """Build backbone."""
+    return SEGBACKBONES.build(cfg)
 
 def build_backbone(cfg):
     """Build backbone."""
@@ -78,7 +84,7 @@ def build_model(cfg, train_cfg=None, test_cfg=None):
 
     Should be deprecated in the future.
     """
-    if cfg.type in ['EncoderDecoder3D']:
+    if cfg.type in ['EncoderDecoder3D','MultivewEncoderDecoder']:
         return build_segmentor(cfg, train_cfg=train_cfg, test_cfg=test_cfg)
     else:
         return build_detector(cfg, train_cfg=train_cfg, test_cfg=test_cfg)
