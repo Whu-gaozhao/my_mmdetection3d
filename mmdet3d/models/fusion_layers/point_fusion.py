@@ -195,7 +195,7 @@ class PointFusion(BaseModule):
 
         if self.fuse_out:
             self.fuse_conv = nn.Sequential(
-                nn.Linear(out_channels, out_channels)
+                nn.Linear(out_channels, out_channels),
                 # the input dim of fuse_out is out_channels not mid_channels?
                 # For pts the BN is initialized differently by default
                 # TODO: check whether this is necessary

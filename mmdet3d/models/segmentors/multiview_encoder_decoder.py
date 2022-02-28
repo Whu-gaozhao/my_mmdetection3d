@@ -31,13 +31,13 @@ class MultivewEncoderDecoder(EncoderDecoder3D):
             x = self.img_neck(x)
         return x
 
-    def extract_fused_feat(self, imgs, pts, pts_feature, img_metas):
-        img_feature = self.extract_img_feat(imgs)
+    def extract_fused_feat(self, img, pts, pts_feature, img_metas):
+        img_feature = self.extract_img_feat(img)
         fused_feature = self.fusion_layer(img_feature, pts, pts_feature,
                                           img_metas)
         return fused_feature
 
-    def encode_decode(self, points, imgs, img_metas):
+    def encode_decode(self, points, img, img_metas):
         """Encode points with backbone and decode into a semantic segmentation
         map of the same size as input.
 
@@ -49,17 +49,17 @@ class MultivewEncoderDecoder(EncoderDecoder3D):
             torch.Tensor: Segmentation logits of shape [B, num_classes, N].
         """
         pts_feature = self.extract_feat(points)
-        x = self.extract_fused_feat(imgs, points, pts_feature, img_metas)
+        x = self.extract_fused_feat(img, points, pts_feature, img_metas)
         out = self._decode_head_forward_test(x, img_metas)
         return out
 
-    def forward_dummy(self, points, imgs):
+    def forward_dummy(self, points, img):
         """Dummy forward function."""
-        seg_logit = self.encode_decode(points, imgs, None)
+        seg_logit = self.encode_decode(points, img, None)
 
         return seg_logit
 
-    def forward_train(self, points, imgs, img_metas, pts_semantic_mask):
+    def forward_train(self, points, img, img_metas, pts_semantic_mask):
         """Forward function for training.
 
         Args:
@@ -76,7 +76,7 @@ class MultivewEncoderDecoder(EncoderDecoder3D):
 
         # extract features using backbone
         pts_feature = self.extract_feat(points_cat)
-        x = self.extract_fused_feat(imgs, points_cat, pts_feature, img_metas)
+        x = self.extract_fused_feat(img, points_cat, pts_feature, img_metas)
 
         losses = dict()
 

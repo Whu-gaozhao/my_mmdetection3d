@@ -318,7 +318,7 @@ class ScanNetSegDataset(Custom3DSegDataset):
                  pipeline=None,
                  classes=None,
                  palette=None,
-                 modality=None,
+                 modality=dict(with_image=False),
                  test_mode=False,
                  ignore_index=None,
                  scene_idxs=None):
@@ -333,6 +333,27 @@ class ScanNetSegDataset(Custom3DSegDataset):
             test_mode=test_mode,
             ignore_index=ignore_index,
             scene_idxs=scene_idxs)
+
+    def get_data_info(self, index):
+        input_dict = super().get_data_info(index)
+
+        if self.modality['with_image']:
+            info = self.data_infos[index]
+            img_info = []
+            for img_path in info['img_paths']:
+                img_info.append(
+                    dict(filename=osp.join(self.data_root, img_path)))
+            intrinsic = info['intrinsics']
+            axis_align_matrix = self._get_axis_align_matrix(info)
+            depth2img = []
+            for extrinsic in info['extrinsics']:
+                depth2img.append(
+                    intrinsic @ np.linalg.inv(axis_align_matrix @ extrinsic))
+
+            input_dict['img_prefix'] = None
+            input_dict['img_info'] = img_info
+            input_dict['depth2img'] = depth2img
+        return input_dict
 
     def get_ann_info(self, index):
         """Get annotation info according to the given index.
