@@ -1,10 +1,10 @@
 _base_ = [
-    '../_base_/datasets/scannet_seg-2d_3d-20class.py', './segformer_pct.py',
+    '../_base_/datasets/scannet_seg-3d-20class.py', '../_base_/models/pct.py',
     '../_base_/schedules/seg_cosine_200e.py', '../_base_/default_runtime.py'
 ]
 
 # data settings
-data = dict(samples_per_gpu=4)
+data = dict(samples_per_gpu=16)
 evaluation = dict(interval=5, save_best='miou')
 
 # model settings

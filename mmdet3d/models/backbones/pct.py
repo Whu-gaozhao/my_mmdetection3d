@@ -43,7 +43,7 @@ class SA_Layer(nn.Module):
 
 @BACKBONES.register_module()
 class Point_Transformer(BaseModule):
-    """PointNet2 with Single-scale grouping.
+    """Point_Transformer single scale.
 
     Args:
 
@@ -51,6 +51,7 @@ class Point_Transformer(BaseModule):
 
     def __init__(self,
                  in_channels,
+                 out_channels=1024,
                  channels=128,
                  num_stages=4,
                  conv_cfg=dict(type='Conv1d'),
@@ -80,6 +81,14 @@ class Point_Transformer(BaseModule):
         for _ in range(self.num_stages):
             self.sa.append(SA_Layer(channels))
 
+        self.conv_fuse = ConvModule(
+            channels * num_stages,
+            out_channels,
+            1,
+            conv_cfg=conv_cfg,
+            norm_cfg=norm_cfg,
+            act_cfg=dict(type='LeakyReLU', negative_slope=0.2))
+
     @auto_fp16()
     def forward(self, points):
         # b, n, c --> b, c, n
@@ -87,8 +96,10 @@ class Point_Transformer(BaseModule):
         x = self.point_embedding(x)
         x = self.conv(x)
 
-        outs = []
+        features = []
         for i in range(self.num_stages):
             x = self.sa[i](x)
-            outs.append(x)
-        return outs
+            features.append(x)
+        x = torch.cat(features, dim=1)
+        out = self.conv_fuse(x)
+        return out

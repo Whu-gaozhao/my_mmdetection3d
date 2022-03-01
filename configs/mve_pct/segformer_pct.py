@@ -17,18 +17,20 @@ model = dict(
         attn_drop_rate=0.0,
         drop_path_rate=0.1),
     fusion_layer=dict(
-        type='PointFusion',
+        type='PointFusionMultiview',
         img_channels=[32, 64, 160, 256],
-        pts_channels=128, # the out of Point Transformer
-        mid_channels=128, # Multi level feature  first turn to
-        out_channels=128,
+        pts_channels=1024,  # the out of Point Transformer
+        mid_channels=128,  # Multi level feature  first turn to
+        out_channels=1024,
         img_levels=[0, 1, 2, 3],
+        coord_type='DEPTH',
         align_corners=False,
         activate_out=True,
-        fuse_out=False)),
+        fuse_out=False),
     backbone=dict(
         type='Point_Transformer',
         in_channels=6,  # [xyz, rgb], should be modified with dataset
+        out_channels=1024,
         channels=128,
         num_stages=4,
         conv_cfg=dict(type='Conv1d'),
@@ -36,8 +38,8 @@ model = dict(
         act_cfg=dict(type='ReLU')),
     decode_head=dict(
         type='Point_TransformerHead',
-        in_channels=[128,128,128,128],
-        mlp_channel=1024,
+        in_channels=1024,
+        mid_channels=512,
         channels=256,
         dropout_ratio=0.5,
         conv_cfg=dict(type='Conv1d'),

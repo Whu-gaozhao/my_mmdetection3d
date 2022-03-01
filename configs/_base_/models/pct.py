@@ -4,6 +4,7 @@ model = dict(
     backbone=dict(
         type='Point_Transformer',
         in_channels=6,  # [xyz, rgb], should be modified with dataset
+        out_channels=1024,
         channels=128,
         num_stages=4,
         conv_cfg=dict(type='Conv1d'),
@@ -11,8 +12,8 @@ model = dict(
         act_cfg=dict(type='ReLU')),
     decode_head=dict(
         type='Point_TransformerHead',
-        in_channels=[128,128,128,128],
-        mlp_channel=1024,
+        in_channels=1024,
+        mid_channels=512,
         channels=256,
         dropout_ratio=0.5,
         conv_cfg=dict(type='Conv1d'),
