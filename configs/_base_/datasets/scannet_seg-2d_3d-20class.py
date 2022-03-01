@@ -1,6 +1,6 @@
 # dataset settings
 dataset_type = 'ScanNetSegDataset'
-data_root = './data/scannet/'
+data_root = 'G:/Datasets/scannet/'
 class_names = ('wall', 'floor', 'cabinet', 'bed', 'chair', 'sofa', 'table',
                'door', 'window', 'bookshelf', 'picture', 'counter', 'desk',
                'curtain', 'refrigerator', 'showercurtrain', 'toilet', 'sink',
@@ -46,7 +46,7 @@ train_pipeline = [
         min_unique_num=None),
     dict(type='NormalizePointsColor', color_mean=None),
     dict(type='DefaultFormatBundle3D', class_names=class_names),
-    dict(type='Collect3D', keys=['points', 'pts_semantic_mask'])
+    dict(type='Collect3D', keys=['points', 'img', 'pts_semantic_mask'])
 ]
 test_pipeline = [
     dict(
@@ -87,7 +87,7 @@ test_pipeline = [
                 type='DefaultFormatBundle3D',
                 class_names=class_names,
                 with_label=False),
-            dict(type='Collect3D', keys=['points'])
+            dict(type='Collect3D', keys=['points', 'img'])
         ])
 ]
 # construct a pipeline for data and gt loading in show function
@@ -124,7 +124,7 @@ eval_pipeline = [
         type='DefaultFormatBundle3D',
         with_label=False,
         class_names=class_names),
-    dict(type='Collect3D', keys=['points', 'pts_semantic_mask'])
+    dict(type='Collect3D', keys=['points', 'img', 'pts_semantic_mask'])
 ]
 
 data = dict(

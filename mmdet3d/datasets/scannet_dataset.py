@@ -374,6 +374,24 @@ class ScanNetSegDataset(Custom3DSegDataset):
 
         anns_results = dict(pts_semantic_mask_path=pts_semantic_mask_path)
         return anns_results
+        
+    @staticmethod
+    def _get_axis_align_matrix(info):
+        """Get axis_align_matrix from info. If not exist, return identity mat.
+
+        Args:
+            info (dict): one data info term.
+
+        Returns:
+            np.ndarray: 4x4 transformation matrix.
+        """
+        if 'axis_align_matrix' in info['annos'].keys():
+            return info['annos']['axis_align_matrix'].astype(np.float32)
+        else:
+            warnings.warn(
+                'axis_align_matrix is not found in ScanNet data info, please '
+                'use new pre-process scripts to re-generate ScanNet data')
+            return np.eye(4).astype(np.float32)
 
     def _build_default_pipeline(self):
         """Build the default pipeline for this dataset."""

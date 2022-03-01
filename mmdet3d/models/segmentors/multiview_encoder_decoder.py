@@ -24,8 +24,15 @@ class MultivewEncoderDecoder(EncoderDecoder3D):
         if img_neck:
             self.img_neck = builder.build_neck(img_neck)
 
+    @property
+    def with_img_neck(self):
+        """bool: Whether the detector has a neck in image branch."""
+        return hasattr(self, 'img_neck') and self.img_neck is not None
+
     def extract_img_feat(self, img):
         """Directly extract features from the img backbone+neck."""
+        # point fusion layer only supports single view input now
+        img = img.squeeze(dim=1)
         x = self.img_backbone(img)
         if self.with_img_neck:
             x = self.img_neck(x)
