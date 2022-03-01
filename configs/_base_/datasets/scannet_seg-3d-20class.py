@@ -1,11 +1,11 @@
 # dataset settings
 dataset_type = 'ScanNetSegDataset'
-data_root = './data/scannet/'
+data_root = 'G:/Datasets/scannet/'
 class_names = ('wall', 'floor', 'cabinet', 'bed', 'chair', 'sofa', 'table',
                'door', 'window', 'bookshelf', 'picture', 'counter', 'desk',
                'curtain', 'refrigerator', 'showercurtrain', 'toilet', 'sink',
                'bathtub', 'otherfurniture')
-num_points = 8192
+num_points = 2048
 train_pipeline = [
     dict(
         type='LoadPointsFromFile',
