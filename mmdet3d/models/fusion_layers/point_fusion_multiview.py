@@ -55,7 +55,6 @@ def point_sample(img_meta,
     # apply transformation based on info in img_meta
     points = apply_3d_transformation(
         points, coord_type, img_meta, reverse=True)
-
     # project points to camera coordinate
     pts_2d = points_cam2img(points, proj_mat)
 
@@ -254,19 +253,33 @@ class PointFusionMultiview(BaseModule):
             ]
         else:
             img_ins = img_feats
-        img_feats_per_point = []
+
         # Sample multi-level features
-        for i in range(len(img_metas)):
+        if self.training:
+            img_feats_per_point = []
+            for i in range(len(img_metas)):
+                mlvl_img_feats = []
+                for level in range(len(self.img_levels)):
+                    mlvl_img_feats.append(
+                        self.sample_single(img_ins[level][i:i + 1],
+                                           pts[i][:, :3], img_metas[i]))
+                mlvl_img_feats = torch.cat(mlvl_img_feats, dim=-1)
+                img_feats_per_point.append(mlvl_img_feats)
+            # list[n,c] --> b,n,c
+            img_pts_stack = torch.stack(img_feats_per_point)
+        else:
             mlvl_img_feats = []
+            B, N, _ = pts.shape
+            all_pts = torch.reshape(pts, ((B * N, -1)))
             for level in range(len(self.img_levels)):
                 mlvl_img_feats.append(
-                    self.sample_single(img_ins[level][i:i + 1], pts[i][:, :3],
-                                       img_metas[i]))
+                    self.sample_single(img_ins[level][:1], all_pts[:, :3],
+                                       img_metas))
             mlvl_img_feats = torch.cat(mlvl_img_feats, dim=-1)
-            img_feats_per_point.append(mlvl_img_feats)
+            # b*n,c --> b,n,c
+            img_pts_stack = torch.reshape(mlvl_img_feats, ((B, N, -1)))
 
-        # list[n,c] --> b,n,c --> b,c,n
-        img_pts_stack = torch.stack(img_feats_per_point)
+        # b,n,c --> b,c,n
         img_pts = img_pts_stack.permute(0, 2, 1)
         return img_pts
 
@@ -291,7 +304,7 @@ class PointFusionMultiview(BaseModule):
             pts.new_tensor(img_meta['img_crop_offset'])
             if 'img_crop_offset' in img_meta.keys() else 0)
         proj_mat = get_proj_mat_by_coord_type(img_meta, self.coord_type)
-        proj_mat = proj_mat[0] # single image now
+        proj_mat = proj_mat[0]  # single image now
         img_pts = point_sample(
             img_meta=img_meta,
             img_features=img_feats,
