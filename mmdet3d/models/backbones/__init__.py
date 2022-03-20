@@ -6,10 +6,12 @@ from .nostem_regnet import NoStemRegNet
 from .pointnet2_sa_msg import PointNet2SAMSG
 from .pointnet2_sa_ssg import PointNet2SASSG
 from .second import SECOND
-from .pct import Point_Transformer
+from .pct import Point_Transformer, PCT
+from .mve_pct import MVE_PCT
+from .pointnet import PointNet
 
 __all__ = [
     'ResNet', 'ResNetV1d', 'ResNeXt', 'SSDVGG', 'HRNet', 'NoStemRegNet',
     'MixVisionTransformer', 'SECOND', 'PointNet2SASSG', 'PointNet2SAMSG',
-    'MultiBackbone', "Point_Transformer"
+    'MultiBackbone', 'Point_Transformer', 'MVE_PCT', 'PCT','PointNet',
 ]
